@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>Event QR Check-in</title>
+
+    <script
+        src="https://unpkg.com/html5-qrcode"
+        type="text/javascript">
+    </script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f3f4f6;
+
+            color: #111827;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 520px;
+
+            margin: auto;
+
+            padding: 20px;
+
+        }
+
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+        }
+
+
+        .header p {
+
+            margin-top: 8px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+
+        }
+
+
+        .card {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            margin-bottom: 16px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.08
+                );
+
+        }
+
+
+        label {
+
+            display: block;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border:
+                1px solid #d1d5db;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            outline: none;
+
+        }
+
+
+        input:focus {
+
+            border-color:
+                #2563eb;
+
+        }
+
+
+        #reader {
+
+            width: 100%;
+
+            overflow: hidden;
+
+            border-radius: 12px;
+
+        }
+
+
+        .scanner-wrapper {
+
+            background:
+                #111827;
+
+            padding: 10px;
+
+            border-radius: 14px;
+
+        }
+
+
+        .button {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 12px;
+
+        }
+
+
+        .button-primary {
+
+            background:
+                #2563eb;
+
+            color: white;
+
+        }
+
+
+        .button-danger {
+
+            background:
+                #dc2626;
+
+            color: white;
+
+        }
+
+
+        .hidden {
+
+            display: none !important;
+
+        }
+
+
+        .status-box {
+
+            display: none;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            margin-bottom: 16px;
+
+        }
+
+
+        .status-box h2 {
+
+            margin:
+                0 0 10px 0;
+
+            font-size: 22px;
+
+        }
+
+
+        .status-box p {
+
+            margin:
+                6px 0;
+
+            line-height: 1.5;
+
+        }
+
+
+        .success {
+
+            display: block;
+
+            background:
+                #dcfce7;
+
+            color:
+                #166534;
+
+            border:
+                1px solid #86efac;
+
+        }
+
+
+        .warning {
+
+            display: block;
+
+            background:
+                #fef3c7;
+
+            color:
+                #92400e;
+
+            border:
+                1px solid #fcd34d;
+
+        }
+
+
+        .error {
+
+            display: block;
+
+            background:
+                #fee2e2;
+
+            color:
+                #991b1b;
+
+            border:
+                1px solid #fca5a5;
+
+        }
+
+
+        .info {
+
+            display: block;
+
+            background:
+                #dbeafe;
+
+            color:
+                #1e40af;
+
+            border:
+                1px solid #93c5fd;
+
+        }
+
+
+        .employee-info {
+
+            margin-top: 14px;
+
+            padding: 12px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.6
+                );
+
+            border-radius: 8px;
+
+        }
+
+
+        .employee-info p {
+
+            margin:
+                7px 0;
+
+        }
+
+
+        .employee-info strong {
+
+            display: inline-block;
+
+            min-width: 130px;
+
+        }
+
+
+        .footer {
+
+            text-align: center;
+
+            font-size: 12px;
+
+            color: #9ca3af;
+
+            padding-bottom: 20px;
+
+        }
+
+
+        @media (
+            max-width: 480px
+        ) {
+
+            .container {
+
+                padding: 12px;
+
+            }
+
+            .card {
+
+                padding: 15px;
+
+            }
+
+            .header h1 {
+
+                font-size: 24px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <div class="header">
+
+        <h1>
+            Event Check-in
+        </h1>
+
+        <p>
+            Scan employee QR codes
+        </p>
+
+    </div>
+
+
+    <!-- EVENT -->
+
+    <div class="card">
+
+        <label for="eventName">
+            Event Name
+        </label>
+
+        <input
+            id="eventName"
+            type="text"
+            placeholder="Enter event name"
+            autocomplete="off"
+        >
+
+
+        <button
+            id="startButton"
+            class="button button-primary"
+            onclick="startScanner()"
+        >
+            Start Scanner
+        </button>
+
+    </div>
+
+
+    <!-- SCANNER -->
+
+    <div
+        id="scannerCard"
+        class="card hidden"
+    >
+
+        <div class="scanner-wrapper">
+
+            <div id="reader"></div>
+
+        </div>
+
+
+        <button
+            class="button button-danger"
+            onclick="stopScanner()"
+        >
+            Stop Scanner
+        </button>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultBox"
+        class="status-box"
+    >
+
+        <h2 id="resultTitle"></h2>
+
+        <p id="resultMessage"></p>
+
+
+        <div
+            id="employeeInfo"
+            class="employee-info hidden"
+        >
+
+            <p>
+                <strong>
+                    Employee Name:
+                </strong>
+
+                <span id="employeeName">
+                </span>
+            </p>
+
+
+            <p>
+                <strong>
+                    Employee Code:
+                </strong>
+
+                <span id="employeeCode">
+                </span>
+            </p>
+
+
+            <p>
+                <strong>
+                    Event:
+                </strong>
+
+                <span id="resultEvent">
+                </span>
+            </p>
+
+
+            <p>
+                <strong>
+                    Check-in Time:
+                </strong>
+
+                <span id="checkinTime">
+                </span>
+            </p>
+
+
+            <p>
+                <strong>
+                    Status:
+                </strong>
+
+                <span id="employeeStatus">
+                </span>
+            </p>
+
+        </div>
+
+
+        <button
+            class="button button-primary"
+            onclick="scanAgain()"
+        >
+            Scan Again
+        </button>
+
+    </div>
+
+
+    <!-- API STATUS -->
+
+    <div
+        id="connectionBox"
+        class="status-box"
+    >
+
+        <h2>
+            System Status
+        </h2>
+
+        <p id="connectionMessage">
+        </p>
+
+    </div>
+
+
+    <div class="footer">
+
+        Employee Event Check-in System
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/*
+ * ============================================================
+ * CONFIGURATION
+ * ============================================================
+ */
+
+
+/*
+ * Replace this with your App 3 Web App URL.
+ */
+
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbxdJVi-ts6b9jUSD1f4pCXLWD0EK0mG07YgehZrJAEzmRioT84CJQ0qpSfy7GwyD5NF/exec";
+
+
+/*
+ * ============================================================
+ * GLOBAL VARIABLES
+ * ============================================================
+ */
+
+let html5QrCode =
+    null;
+
+
+let scannerRunning =
+    false;
+
+
+let processingScan =
+    false;
+
+
+/*
+ * ============================================================
+ * PAGE LOAD
+ * ============================================================
+ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const savedEvent =
+            localStorage.getItem(
+                "eventName"
+            );
+
+
+        if (savedEvent) {
+
+            document
+                .getElementById(
+                    "eventName"
+                )
+                .value =
+                    savedEvent;
+
+        }
+
+
+        checkAPI();
+
+    }
+);
+
+
+/*
+ * ============================================================
+ * CHECK API
+ * ============================================================
+ */
+
+async function checkAPI() {
+
+    const box =
+        document.getElementById(
+            "connectionBox"
+        );
+
+
+    const message =
+        document.getElementById(
+            "connectionMessage"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (data.success) {
+
+            message.textContent =
+                "Validation server is online.";
+
+            box.className =
+                "status-box success";
+
+        } else {
+
+            message.textContent =
+                "Validation server responded with an error.";
+
+            box.className =
+                "status-box warning";
+
+        }
+
+    } catch (error) {
+
+        message.textContent =
+            "Unable to connect to App 3.";
+
+        box.className =
+            "status-box error";
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * START SCANNER
+ * ============================================================
+ */
+
+async function startScanner() {
+
+    const eventName =
+        document
+            .getElementById(
+                "eventName"
+            )
+            .value
+            .trim();
+
+
+    if (!eventName) {
+
+        showResult(
+            "EVENT NAME REQUIRED",
+            "Enter the event name before starting the scanner.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Save event name.
+     */
+
+    localStorage.setItem(
+        "eventName",
+        eventName
+    );
+
+
+    hideResult();
+
+
+    document
+        .getElementById(
+            "scannerCard"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "startButton"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+    try {
+
+        html5QrCode =
+            new Html5Qrcode(
+                "reader"
+            );
+
+
+        const config = {
+
+            fps: 10,
+
+            qrbox:
+                function(
+                    width,
+                    height
+                ) {
+
+                    const size =
+                        Math.floor(
+                            Math.min(
+                                width,
+                                height
+                            ) *
+                            0.70
+                        );
+
+
+                    return {
+
+                        width:
+                            size,
+
+                        height:
+                            size
+
+                    };
+
+                },
+
+            aspectRatio: 1.0
+
+        };
+
+
+        await html5QrCode.start(
+
+            {
+                facingMode:
+                    "environment"
+            },
+
+            config,
+
+            onScanSuccess,
+
+            onScanFailure
+
+        );
+
+
+        scannerRunning =
+            true;
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        scannerRunning =
+            false;
+
+
+        await stopScanner();
+
+
+        showResult(
+            "CAMERA ERROR",
+            getCameraErrorMessage(error),
+            "error"
+        );
+
+    }
+
+}
+
+
+/*
+ * ============================================================
+ * CAMERA ERROR
+ * ============================================================
+ */
+
+function getCameraErrorMessage(
+    error
+) {
+
+    const message =
+        String(
+            error || ""
+        ).toLowerCase();
+
+
+    if (
+        message.includes(
+            "permission"
+        )
+    ) {
+
+        return (
+            "Camera permission was denied. " +
+            "Allow camera access in Chrome settings."
+        );
+
+    }
+
+
+    if (
+        message.includes(
+            "notallowed"
+        )
+    ) {
+
+        return (
+            "Camera access is blocked. " +
+            "Make sure you are using the HTTPS GitHub Pages URL."
+        );
+
+    }
+
+
+    if (
+        message.includes(
+            "notfound"
+        )
+    ) {
+
+        return (
+            "No camera was found on this device."
+        );
+
+    }
+
+
+    return (
+        "Unable to start the camera. " +
+        "Please allow camera access and try again."
+    );
+
+}
+
+
+/*
+ * ============================================================
+ * QR SCAN SUCCESS
+ * ============================================================
+ */
+
+async function onScanSuccess(
+    decodedText
+) {
+
+    if (
+        processingScan
+    ) {
+
+        return;
+
+    }
+
+
+    processingScan =
+        true;
+
+
+    console.log(
+        "QR DATA:",
+        decodedText
+    );
+
+
+    /*
+     * Stop scanner first.
+     */
+
+    await stopScanner();
+
+
+    /*
+     * Parse QR.
+     */
+
+    const qrData =
+        parseEmployeeQR(
+            decodedText
+        );
+
+
+    if (!qrData.success) {
+
+        playErrorSound();
+
+
+        showResult(
+            "INVALID QR CODE",
+            qrData.message,
+            "error"
+        );
+
+
+        processingScan =
+            false;
+
+
+        return;
+
+    }
+
+
+    /*
+     * Send only the token to App 3.
+     */
+
+    await validateCheckin(
+        qrData
+    );
+
+}
+
+
+/*
+ * ============================================================
+ * QR SCAN FAILURE
+ * ============================================================
+ */
+
+function onScanFailure(
+    errorMessage
+) {
+
+    /*
+     * Normal scanner operation.
+     *
+     * Ignored intentionally.
+     */
+
+}
+
+
+/*
+ * ============================================================
+ * PARSE EMPLOYEE QR
+ * ============================================================
+ *
+ * Expected:
+ *
+ * EMPLOYEE NAME: Juan Dela Cruz
+ * EMPLOYEE CODE: EMP001
+ * TOKEN: EMPQR-XXXXXXXX...
+ *
+ */
+
+function parseEmployeeQR(
+    qrText
+) {
+
+    if (!qrText) {
+
+        return {
+
+            success: false,
+
+            message:
+                "QR code is empty."
+
+        };
+
+    }
+
+
+    const text =
+        String(
+            qrText
+        )
+        .trim();
+
+
+    /*
+     * Extract Employee Name.
+     */
+
+    const nameMatch =
+        text.match(
+            /EMPLOYEE\s+NAME\s*:\s*(.+)/i
+        );
+
+
+    /*
+     * Extract Employee Code.
+     */
+
+    const codeMatch =
+        text.match(
+            /EMPLOYEE\s+CODE\s*:\s*(.+)/i
+        );
+
+
+    /*
+     * Extract Token.
+     */
+
+    const tokenMatch =
+        text.match(
+            /TOKEN\s*:\s*(EMPQR-[A-Za-z0-9]{32})/i
+        );
+
+
+    if (!tokenMatch) {
+
+        return {
+
+            success: false,
+
+            message:
+                "QR code does not contain a valid employee token."
+
+        };
+
+    }
+
+
+    const employeeName =
+        nameMatch
+            ? nameMatch[1].trim()
+            : "";
+
+
+    const employeeCode =
+        codeMatch
+            ? codeMatch[1].trim()
+            : "";
+
+
+    const token =
+        tokenMatch[1].trim();
+
+
+    return {
+
+        success: true,
+
+        employeeName:
+            employeeName,
+
+        employeeCode:
+            employeeCode,
+
+        token:
+            token
+
+    };
+
+}
+
+
+/*
+ * ============================================================
+ * VALIDATE CHECK-IN
+ * ============================================================
+ */
+
+async function validateCheckin(
+    qrData
+) {
+
+    const eventName =
+        document
+            .getElementById(
+                "eventName"
+            )
+            .value
+            .trim();
+
+
+    showResult(
+        "CHECKING QR CODE...",
+        "Please wait.",
+        "info"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                API_URL,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            token:
+                                qrData.token,
+
+                            eventName:
+                                eventName
+
+                        })
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "API RESPONSE:",
+            data
+        );
+
+
+        handleAPIResponse(
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        playErrorSound();
+
+
+        showResult(
+            "CONNECTION ERROR",
+            "Unable to contact the validation server.",
+            "error"
+        );
+
+    }
+
+
+    processingScan =
+        false;
+
+}
+
+
+/*
+ * ============================================================
+ * HANDLE API RESPONSE
+ * ============================================================
+ */
+
+function handleAPIResponse(
+    data
+) {
+
+    if (!data) {
+
+        playErrorSound();
+
+        showResult(
+            "INVALID RESPONSE",
+            "The server returned an invalid response.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * SUCCESS
+     */
+
+    if (
+        data.success &&
+        data.status ===
+            "CHECKED_IN"
+    ) {
+
+        playSuccessSound();
+
+
+        showEmployeeResult(
+            "CHECK-IN SUCCESSFUL",
+            data.message,
+            "success",
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * DUPLICATE
+     */
+
+    if (
+        data.status ===
+            "ALREADY_CHECKED_IN"
+    ) {
+
+        playWarningSound();
+
+
+        showEmployeeResult(
+            "ALREADY CHECKED IN",
+            data.message,
+            "warning",
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * INACTIVE
+     */
+
+    if (
+        data.status ===
+            "INACTIVE"
+    ) {
+
+        playErrorSound();
+
+
+        showEmployeeResult(
+            "INACTIVE EMPLOYEE",
+            data.message,
+            "warning",
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * INVALID
+     */
+
+    if (
+        data.status ===
+            "INVALID"
+    ) {
+
+        playErrorSound();
+
+
+        showResult(
+            "INVALID QR CODE",
+            data.message,
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * ERROR
+     */
+
+    playErrorSound();
+
+
+    showResult(
+        "ERROR",
+        data.message ||
+            "An unexpected error occurred.",
+        "error"
+    );
+
+}
+
+
+/*
+ * ============================================================
+ * SHOW EMPLOYEE RESULT
+ * ============================================================
+ */
+
+function showEmployeeResult(
+    title,
+    message,
+    type,
+    data
+) {
+
+    const box =
+        document.getElementById(
+            "resultBox"
+        );
+
+
+    box.className =
+        "status-box " +
+        type;
+
+
+    document
+        .getElementById(
+            "resultTitle"
+        )
+        .textContent =
+            title;
+
+
+    document
+        .getElementById(
+            "resultMessage"
+        )
+        .textContent =
+            message || "";
+
+
+    document
+        .getElementById(
+            "employeeInfo"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "employeeName"
+        )
+        .textContent =
+            data.employeeName ||
+            "-";
+
+
+    document
+        .getElementById(
+            "employeeCode"
+        )
+        .textContent =
+            data.employeeCode ||
+            "-";
+
+
+    document
+        .getElementById(
+            "resultEvent"
+        )
+        .textContent =
+            data.eventName ||
+            "-";
+
+
+    document
+        .getElementById(
+            "employeeStatus"
+        )
+        .textContent =
+            data.employeeStatus ||
+            "-";
+
+
+    document
+        .getElementById(
+            "checkinTime"
+        )
+        .textContent =
+            formatDateTime(
+                data.checkinTime ||
+                data.previousCheckinTime
+            );
+
+}
+
+
+/*
+ * ============================================================
+ * SHOW RESULT
+ * ============================================================
+ */
+
+function showResult(
+    title,
+    message,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "resultBox"
+        );
+
+
+    box.className =
+        "status-box " +
+        type;
+
+
+    document
+        .getElementById(
+            "resultTitle"
+        )
+        .textContent =
+            title;
+
+
+    document
+        .getElementById(
+            "resultMessage"
+        )
+        .textContent =
+            message || "";
+
+
+    document
+        .getElementById(
+            "employeeInfo"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+}
+
+
+/*
+ * ============================================================
+ * HIDE RESULT
+ * ============================================================
+ */
+
+function hideResult() {
+
+    document
+        .getElementById(
+            "resultBox"
+        )
+        .className =
+            "status-box hidden";
+
+}
+
+
+/*
+ * ============================================================
+ * STOP SCANNER
+ * ============================================================
+ */
+
+async function stopScanner() {
+
+    if (
+        html5QrCode &&
+        scannerRunning
+    ) {
+
+        try {
+
+            await html5QrCode.stop();
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+        }
+
+    }
+
+
+    scannerRunning =
+        false;
+
+
+    html5QrCode =
+        null;
+
+
+    const reader =
+        document.getElementById(
+            "reader"
+        );
+
+
+    if (reader) {
+
+        reader.innerHTML =
+            "";
+
+    }
+
+
+    document
+        .getElementById(
+            "scannerCard"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "startButton"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+/*
+ * ============================================================
+ * SCAN AGAIN
+ * ============================================================
+ */
+
+function scanAgain() {
+
+    processingScan =
+        false;
+
+
+    hideResult();
+
+
+    startScanner();
+
+}
+
+
+/*
+ * ============================================================
+ * DATE FORMAT
+ * ============================================================
+ */
+
+function formatDateTime(
+    value
+) {
+
+    if (!value) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(
+            value
+        );
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+/*
+ * ============================================================
+ * SOUNDS
+ * ============================================================
+ */
+
+function playSuccessSound() {
+
+    playTone(
+        880,
+        150
+    );
+
+
+    setTimeout(
+        function() {
+
+            playTone(
+                1200,
+                180
+            );
+
+        },
+        160
+    );
+
+}
+
+
+function playWarningSound() {
+
+    playTone(
+        600,
+        250
+    );
+
+}
+
+
+function playErrorSound() {
+
+    playTone(
+        300,
+        300
+    );
+
+}
+
+
+function playTone(
+    frequency,
+    duration
+) {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        const audioContext =
+            new AudioContext();
+
+
+        const oscillator =
+            audioContext
+                .createOscillator();
+
+
+        const gainNode =
+            audioContext
+                .createGain();
+
+
+        oscillator.connect(
+            gainNode
+        );
+
+
+        gainNode.connect(
+            audioContext.destination
+        );
+
+
+        oscillator.frequency.value =
+            frequency;
+
+
+        oscillator.type =
+            "sine";
+
+
+        gainNode.gain.setValueAtTime(
+            0.15,
+            audioContext.currentTime
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audioContext.currentTime +
+            duration / 1000
+        );
+
+
+    } catch (error) {
+
+        console.log(
+            "Audio unavailable"
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
